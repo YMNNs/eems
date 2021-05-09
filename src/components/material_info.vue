@@ -1,10 +1,10 @@
 <template>
-<router-view/>
+<h1>物资维护</h1>
 </template>
 
 <script>
 export default {
-  name: "app"
+  name: "material_info"
 }
 </script>
 
