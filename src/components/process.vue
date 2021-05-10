@@ -1,10 +1,10 @@
 <template>
-  <h1>物资维护</h1>
+  <h1>流程维护</h1>
 </template>
 
 <script>
 export default {
-  name: "material_info"
+  name: "process"
 }
 </script>
 

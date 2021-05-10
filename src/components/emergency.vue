@@ -1,10 +1,10 @@
 <template>
-  <h1>物资维护</h1>
+  <h1>紧急事件处理</h1>
 </template>
 
 <script>
 export default {
-  name: "material_info"
+  name: "emergency"
 }
 </script>
 

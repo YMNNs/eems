@@ -2,28 +2,28 @@
   <div>
     <a-row>
       <!--尝试删掉a-row-->
-      <a-col id="col" :xs="2" :sm="4" :md="6" :lg="8" :xl="10"/>
-      <a-col id="col" :xs="20" :sm="16" :md="12" :lg="8" :xl="4">
+      <a-col id="col" :lg="8" :md="6" :sm="4" :xl="10" :xs="2"/>
+      <a-col id="col" :lg="8" :md="12" :sm="16" :xl="4" :xs="20">
         <div class="login-form">
-          <a-input size="large" placeholder="用户名" v-model:value="form.username">
+          <a-input v-model:value="form.username" placeholder="用户名" size="large">
             <template #prefix>
               <user-outlined type="user"/>
             </template>
           </a-input>
           <br>
           <br>
-          <a-input-password size="large" placeholder="密码" @keyup.enter.prevent="handleSubmit" block
-                            v-model:value="form.password">
+          <a-input-password v-model:value="form.password" block placeholder="密码" size="large"
+                            @keyup.enter.prevent="handleSubmit">
             <template #prefix>
               <lock-outlined type="password"/>
             </template>
           </a-input-password>
           <br>
           <br>
-          <a-button size="large" type="primary" @click="handleSubmit" block :loading="loading">登录</a-button>
+          <a-button :loading="loading" block size="large" type="primary" @click="handleSubmit">登录</a-button>
         </div>
       </a-col>
-      <a-col id="col" :xs="2" :sm="4" :md="6" :lg="8" :xl="10"/>
+      <a-col id="col" :lg="8" :md="6" :sm="4" :xl="10" :xs="2"/>
     </a-row>
   </div>
 </template>
@@ -42,7 +42,9 @@ export default defineComponent({
   },
 
   setup() {
-
+    localStorage.removeItem('role')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('username')
     const state = reactive({
       loading: false,
       form: {
@@ -63,12 +65,14 @@ export default defineComponent({
         }, 500)
         return message.warning('要登录，请填写所有字段。')
       }
-      const res = await store.dispatch('LoginResult',state.form)
+      const res = await store.dispatch('LoginResult', state.form)
       console.log(res)
-      console.log(store.state)
       setTimeout(function () {
         state.loading = false
       }, 500)
+      if (!res.userId) {
+        return message.error('您输入的用户名或密码不正确。')
+      }
     }
 
     return {

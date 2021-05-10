@@ -1,10 +1,10 @@
 <template>
-  <h1>物资维护</h1>
+  <h1>dashboard</h1>
 </template>
 
 <script>
 export default {
-  name: "material_info"
+  name: "dashboard"
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
-  <h1>物资维护</h1>
+  <h1>接报维护（工作人员）</h1>
 </template>
 
 <script>
 export default {
-  name: "material_info"
+  name: "case_staff"
 }
 </script>
 

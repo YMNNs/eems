@@ -1,5 +1,5 @@
 <template>
-<h1>物资位置维护</h1>
+  <h1>物资位置维护</h1>
 </template>
 
 <script>

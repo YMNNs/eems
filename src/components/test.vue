@@ -1,17 +1,17 @@
 <template>
   <a-menu v-model:selectedKeys="current" mode="horizontal">
     <a-menu-item key="mail">
-      <mail-outlined />
+      <mail-outlined/>
       Navigation One
     </a-menu-item>
     <a-menu-item key="app" disabled>
-      <appstore-outlined />
+      <appstore-outlined/>
       Navigation Two
     </a-menu-item>
     <a-sub-menu>
       <template #title>
         <span class="submenu-title-wrapper">
-          <setting-outlined />
+          <setting-outlined/>
           Navigation Three - Submenu
         </span>
       </template>
@@ -25,15 +25,16 @@
       </a-menu-item-group>
     </a-sub-menu>
     <a-menu-item key="alipay">
-      <a href="https://antdv.com" target="_blank" rel="noopener noreferrer">
+      <a href="https://antdv.com" rel="noopener noreferrer" target="_blank">
         Navigation Four - Link
       </a>
     </a-menu-item>
   </a-menu>
 </template>
 <script>
-import { defineComponent, ref } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import {defineComponent, ref} from 'vue';
+import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
+
 export default defineComponent({
   setup() {
     const current = ref(['mail']);
