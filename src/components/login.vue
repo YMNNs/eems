@@ -20,7 +20,9 @@
           </a-input-password>
           <br>
           <br>
-          <a-button :loading="loading" block size="large" type="primary" @click="handleSubmit">登录</a-button>
+          <a-button :loading="loading" :type="buttonType" block size="large" @click="handleSubmit">
+            <ArrowRightOutlined/>
+          </a-button>
         </div>
       </a-col>
       <a-col id="col" :lg="8" :md="6" :sm="4" :xl="10" :xs="2"/>
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import {LockOutlined, UserOutlined} from '@ant-design/icons-vue';
+import {LockOutlined, UserOutlined, ArrowRightOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import {defineComponent, reactive, toRefs} from 'vue';
 
@@ -38,7 +40,8 @@ import {useStore} from 'vuex'
 export default defineComponent({
   components: {
     UserOutlined,
-    LockOutlined
+    LockOutlined,
+    ArrowRightOutlined
   },
 
   setup() {
@@ -47,6 +50,7 @@ export default defineComponent({
     localStorage.removeItem('username')
     const state = reactive({
       loading: false,
+      buttonType: 'primary',
       form: {
         username: "",
         password: ""

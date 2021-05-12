@@ -1,11 +1,9 @@
 <template>
-  <h1>物资维护</h1>
+  <!--  此页面仅作路由使用-->
+  <router-view/>
 </template>
 
 <script>
-export default {
-  name: "material_info"
-}
 </script>
 
 <style scoped>

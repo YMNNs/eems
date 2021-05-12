@@ -1,5 +1,5 @@
 <template>
-  <a-result status="403" sub-title="您没有权限访问此页面" title="403">
+  <a-result status="404" sub-title="您请求的页面不存在" title="404">
     <template #extra>
       <a-button type="primary" @click="() => $router.go(-1)">返回上一页</a-button>
     </template>

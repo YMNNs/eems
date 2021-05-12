@@ -7,14 +7,14 @@
       </template>
       <br>
       <a-row type="flex">
-        <a-statistic :style="{margin:' 0 32px'}" title="总用户数" :value="dataSource.length"/>
-        <a-statistic :style="{margin:' 0 32px'}" title="正常" :value="enabledUserCount()"/>
-        <a-statistic :style="{margin:' 0 32px'}" title="停用" :value="dataSource.length - enabledUserCount()"/>
+        <a-statistic :style="{margin:' 0 32px'}" :value="dataSource.length" title="总用户数"/>
+        <a-statistic :style="{margin:' 0 32px'}" :value="enabledUserCount()" title="正常"/>
+        <a-statistic :style="{margin:' 0 32px'}" :value="dataSource.length - enabledUserCount()" title="停用"/>
       </a-row>
     </a-page-header>
     <br>
     <!--    添加按钮-->
-    <a-button type="primary" @click="showDrawer" size="large" id="add_user">
+    <a-button id="add_user" size="large" type="primary" @click="showDrawer">
       <template #icon>
         <PlusOutlined/>
       </template>
@@ -22,13 +22,13 @@
     </a-button>
     <!--    用于添加用户的抽屉表单-->
     <a-drawer
-        title="创建新用户"
-        :width="720"
-        :visible="visible"
         :body-style="{ paddingBottom: '80px' }"
+        :visible="visible"
+        :width="720"
+        title="创建新用户"
         @close="onClose"
     >
-      <a-form :model="form" ref="formRef" :rules="rules" layout="vertical">
+      <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="用户名" name="userId">
@@ -44,12 +44,12 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="姓名" name="name">
-              <a-input placeholder="请输入姓名" v-model:value="form.name"/>
+              <a-input v-model:value="form.name" placeholder="请输入姓名"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="性别" name="gender">
-              <a-select placeholder="请选择性别" v-model:value="form.gender">
+              <a-select v-model:value="form.gender" placeholder="请选择性别">
                 <a-select-option value="男">男</a-select-option>
                 <a-select-option value="女">女</a-select-option>
               </a-select>
@@ -59,7 +59,7 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="会员类型" name="role">
-              <a-select placeholder="请选择会员类型" v-model:value="form.role">
+              <a-select v-model:value="form.role" placeholder="请选择会员类型">
                 <a-select-option value="工作人员">工作人员</a-select-option>
                 <a-select-option value="专家">专家</a-select-option>
                 <a-select-option value="指挥人员">指挥人员</a-select-option>
@@ -70,10 +70,10 @@
             <a-form-item label="出生日期" name="dob">
               <a-date-picker
                   v-model:value="form.dob"
-                  :valueFormat="dateFormat"
                   :format="dateFormat"
-                  style="width: 100%"
                   :get-popup-container="trigger => trigger.parentNode"
+                  :valueFormat="dateFormat"
+                  style="width: 100%"
               />
             </a-form-item>
           </a-col>
@@ -111,9 +111,9 @@
               @pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
           />
           <a-button
-              type="primary"
               size="small"
               style="width: 90px; margin-right: 8px"
+              type="primary"
               @click="handleSearch(selectedKeys, confirm, column.dataIndex)"
           >
             <template #icon>
@@ -179,8 +179,9 @@
       <!--      可编辑的出生日期-->
       <template #dob="{record}">
         <div>
-          <a-date-picker :format="dateFormat" v-if="editableData[record.key]" :valueFormat="dateFormat"
-                         v-model:value="editableData[record.key]['dob']"/>
+          <a-date-picker v-if="editableData[record.key]" v-model:value="editableData[record.key]['dob']"
+                         :format="dateFormat"
+                         :valueFormat="dateFormat"/>
           <template v-else>
             {{ record.dob }}
           </template>
@@ -201,10 +202,10 @@
           </a-select>
           <template v-else>
             <span>
-          <a-tag :key="record.role" color="blue" v-if="record.role==='工作人员'">{{ record.role }}</a-tag>
-          <a-tag :key="record.role" color="green" v-if="record.role==='专家'">{{ record.role }}</a-tag>
-          <a-tag :key="record.role" color="cyan" v-if="record.role==='指挥人员'">{{ record.role }}</a-tag>
-          <a-tag :key="record.role" color="orange" v-if="record.role==='管理员'">{{ record.role }}</a-tag>
+          <a-tag v-if="record.role==='工作人员'" :key="record.role" color="blue">{{ record.role }}</a-tag>
+          <a-tag v-if="record.role==='专家'" :key="record.role" color="green">{{ record.role }}</a-tag>
+          <a-tag v-if="record.role==='指挥人员'" :key="record.role" color="cyan">{{ record.role }}</a-tag>
+          <a-tag v-if="record.role==='管理员'" :key="record.role" color="orange">{{ record.role }}</a-tag>
         </span>
           </template>
         </div>
@@ -221,8 +222,8 @@
           </a-select>
           <template v-else>
             <span>
-          <a-tag :key="record.status" color="green" v-if="record.status==='正常'">{{ record.status }}</a-tag>
-          <a-tag :key="record.status" color="red" v-if="record.status==='停用'">{{ record.status }}</a-tag>
+          <a-tag v-if="record.status==='正常'" :key="record.status" color="green">{{ record.status }}</a-tag>
+          <a-tag v-if="record.status==='停用'" :key="record.status" color="red">{{ record.status }}</a-tag>
         </span>
           </template>
         </div>
@@ -233,7 +234,7 @@
         <div class="editable-row-operations">
         <span v-if="editableData[record.key]">
           <a @click="save(record.key)">保存</a>
-          <a-popconfirm title="取消将不会保存您的更改" @confirm="cancel(record.key)" ok-text="继续" cancel-text="取消">
+          <a-popconfirm cancel-text="取消" ok-text="继续" title="取消将不会保存您的更改" @confirm="cancel(record.key)">
             <a>取消</a>
           </a-popconfirm>
         </span>
@@ -241,9 +242,9 @@
           <a @click="edit(record.key)">编辑</a>
             <a-popconfirm
                 v-if="dataSource.length"
-                title="此操作不可撤销"
-                @confirm="onDelete(record.key)"
-                ok-text="继续" cancel-text="取消"
+                cancel-text="取消"
+                ok-text="继续"
+                title="此操作不可撤销" @confirm="onDelete(record.key)"
             >
         <a>删除</a>
       </a-popconfirm>
@@ -257,6 +258,7 @@
 <script>
 import {SearchOutlined, DownOutlined, PlusOutlined} from '@ant-design/icons-vue';
 import {defineComponent, reactive, ref, computed, toRaw} from 'vue';
+import {message} from 'ant-design-vue';
 import {cloneDeep} from 'lodash-es';
 
 let data = [
@@ -402,6 +404,7 @@ export default defineComponent({
             dataSource.value.push(newData);
             onClose();
             resetForm()
+            message.success('已添加 1 个用户。')
           })
           .catch(error => {
             console.log('error', error);
@@ -426,6 +429,8 @@ export default defineComponent({
     const save = key => {
       Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
       delete editableData[key];
+      this.enabledUserCount();
+      message.success('编辑已保存。')
     };
 
 
@@ -443,6 +448,7 @@ export default defineComponent({
      */
     const onDelete = key => {
       dataSource.value = dataSource.value.filter(item => item.key !== key);
+      message.success('已删除 1 个用户。')
     };
 
 
@@ -572,7 +578,6 @@ export default defineComponent({
         key: 'action',
         slots: {customRender: 'action'},
       },
-      {}
     ];
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -585,6 +590,7 @@ export default defineComponent({
       clearFilters();
       state.searchText = '';
     };
+
 
     const searchInput = ref();
 
@@ -612,7 +618,7 @@ export default defineComponent({
       showDrawer,
       onClose,
       resetForm,
-      formRef
+      formRef,
     };
   },
 
@@ -624,6 +630,7 @@ export default defineComponent({
           counter++
         }
       }
+      console.log(counter)
       return counter
     },
 

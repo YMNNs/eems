@@ -63,7 +63,7 @@
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        TODO 版权信息
+        ©2021 环保应急管理系统
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -190,7 +190,7 @@ export default defineComponent({
 #user_info {
   width: fit-content;
   margin-left: auto;
-  margin-right: 16px;
+  margin-right: 100px;
 }
 
 #drop_down {

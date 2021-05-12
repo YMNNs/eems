@@ -1,19 +1,20 @@
 import {createRouter, createWebHistory} from "vue-router";
 import layout from "@/components/layout";
-import register from "@/components/register";
+import register from "@/components/admin/register";
 import login from "@/components/login";
-import event from "@/components/event";
-import material_location from "@/components/material_location";
-import material_info from "@/components/material_info";
+import event from "@/components/staff/event";
+import material_location from "@/components/staff/material_location";
+import material_info from "@/components/staff/material_info";
 import err403 from "@/components/err403"
-import material from "@/components/material";
-import process from "@/components/process";
-import risk_enterprise from "@/components/risk_enterprise"
-import city from "@/components/city"
-import case_staff from "@/components/case_staff"
-import case_commander from "@/components/case_commander"
-import case_specialist from "@/components/case_specialist"
-import emergency from "@/components/emergency"
+import err404 from "@/components/err404"
+import material from "@/components/staff/material";
+import process from "@/components/staff/process";
+import risk_enterprise from "@/components/staff/risk_enterprise"
+import city from "@/components/staff/city"
+import case_staff from "@/components/staff/case_staff"
+import case_commander from "@/components/commander/case_commander"
+import case_specialist from "@/components/specialist/case_specialist"
+import emergency from "@/components/commander/emergency"
 import dashboard from "@/components/dashboard"
 import '@/util/index';
 
@@ -35,7 +36,15 @@ export const constantRoutes = [
         name: 'error403',
         meta: {title: '403错误'},
         hidden: true
-    }, {
+    },
+    {
+        path: '/404',
+        component: err404,
+        name: 'error404',
+        meta: {title: '404错误'},
+        hidden: true
+    },
+    {
         path: '/',
         component: layout,
         name: 'layout',
@@ -119,7 +128,11 @@ export const constantRoutes = [
             },
 
         ]
-    }
+    },
+    {
+        path: '/:catchAll(.*)',
+        redirect: '/404',
+    },
 ]
 
 
@@ -135,8 +148,9 @@ router.beforeEach(((to, from, next) => {
     }
     console.log(to.meta.role)
     let role = localStorage.getItem('role')
-    if (to.path === '/login' || to.path === '/403') {
+    if (to.path === '/login' || to.path === '/403' || to.path === '/404') {
         next()
+        return
     }
     if (!role) {
         next('/login')

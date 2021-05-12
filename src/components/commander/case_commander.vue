@@ -1,10 +1,10 @@
 <template>
-  <h1>流程维护</h1>
+  <h1>接报维护（指挥）</h1>
 </template>
 
 <script>
 export default {
-  name: "process"
+  name: ""
 }
 </script>
 
