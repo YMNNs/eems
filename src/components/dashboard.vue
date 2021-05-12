@@ -26,7 +26,7 @@ export default defineComponent({
   setup() {
     const state = reactive({
       ready: false,
-      title: localStorage.getItem('username') + '，准备好被资本割韭菜了吗',
+      title: localStorage.getItem('username') + '，准备好被资本割韭菜了吗？',
     });
 
     const showInstruction = () => {
