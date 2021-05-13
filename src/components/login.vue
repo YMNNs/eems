@@ -5,6 +5,9 @@
       <a-col id="col" :lg="8" :md="6" :sm="4" :xl="10" :xs="2"/>
       <a-col id="col" :lg="8" :md="12" :sm="16" :xl="4" :xs="20">
         <div class="login-form">
+          <div class="logo">
+            <AlertTwoTone/>
+          </div>
           <a-input v-model:value="form.username" autofocus placeholder="用户名" size="large">
             <template #prefix>
               <user-outlined type="user"/>
@@ -31,7 +34,7 @@
 </template>
 
 <script>
-import {LockOutlined, UserOutlined, ArrowRightOutlined} from '@ant-design/icons-vue';
+import {LockOutlined, UserOutlined, ArrowRightOutlined, AlertTwoTone} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import {defineComponent, reactive, toRefs} from 'vue';
 
@@ -39,6 +42,7 @@ import {useStore} from 'vuex'
 
 export default defineComponent({
   components: {
+    AlertTwoTone,
     UserOutlined,
     LockOutlined,
     ArrowRightOutlined
@@ -90,6 +94,11 @@ export default defineComponent({
 
 <style scoped>
 .login-form {
-  margin-top: 75%;
+  margin-top: 60%;
+}
+
+.logo {
+  font-size: 60px;
+  margin-bottom: 100px;
 }
 </style>

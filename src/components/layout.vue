@@ -1,7 +1,9 @@
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-sider v-model:collapsed="collapsed" collapsible>
-      <div class="logo">?</div>
+      <div class="logo">
+        <AlertOutlined/>
+      </div>
       <a-menu :openKeys="openKeys"
               :selectedKeys="[$route.path]"
               mode="inline"
@@ -70,7 +72,7 @@
 </template>
 <script>
 import {defineComponent, reactive, toRefs} from 'vue';
-import {UserOutlined, DownOutlined} from '@ant-design/icons-vue';
+import {UserOutlined, DownOutlined, AlertOutlined} from '@ant-design/icons-vue';
 import '@/util/index';
 import router from "@/router";
 import {createFromIconfontCN} from '@ant-design/icons-vue';
@@ -81,6 +83,7 @@ const IconFont = createFromIconfontCN({
 
 export default defineComponent({
   components: {
+    AlertOutlined,
     IconFont,
     DownOutlined,
     UserOutlined,

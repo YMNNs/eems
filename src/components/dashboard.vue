@@ -5,7 +5,7 @@
         <DislikeTwoTone/>
       </template>
       <template v-else>
-        <LeftCircleTwoTone />
+        <LeftCircleTwoTone/>
       </template>
     </template>
     <template #extra>
