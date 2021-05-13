@@ -5,7 +5,7 @@
       <a-col id="col" :lg="8" :md="6" :sm="4" :xl="10" :xs="2"/>
       <a-col id="col" :lg="8" :md="12" :sm="16" :xl="4" :xs="20">
         <div class="login-form">
-          <a-input v-model:value="form.username" placeholder="用户名" size="large">
+          <a-input v-model:value="form.username" autofocus placeholder="用户名" size="large">
             <template #prefix>
               <user-outlined type="user"/>
             </template>
