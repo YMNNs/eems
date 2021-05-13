@@ -35,28 +35,37 @@
     <a-layout>
       <a-layout-header
           style="background: #fff; padding: 0">
-        <div id="user_info">
-          <a-avatar :size="40">
-            <template #icon>
-              <UserOutlined/>
-            </template>
-          </a-avatar>
-          <div id="drop_down">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ username }}
-                <DownOutlined/>
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item>
-                    <a href="/login">退出登录</a>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-        </div>
+        <a-row>
+          <a-col :span="12">
+            <div id="sys_title">环保应急管理系统</div>
+          </a-col>
+          <a-col :span="12">
+            <div id="user_info">
+              <a-avatar :size="40">
+                <template #icon>
+                  <UserOutlined/>
+                </template>
+              </a-avatar>
+              <div id="drop_down">
+                <a-dropdown>
+                  <a class="ant-dropdown-link" @click.prevent>
+                    {{ username }}
+                    <DownOutlined/>
+                  </a>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item>
+                        <a href="/login">退出登录</a>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </div>
+            </div>
+          </a-col>
+
+        </a-row>
+
 
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
@@ -193,7 +202,14 @@ export default defineComponent({
 #user_info {
   width: fit-content;
   margin-left: auto;
-  margin-right: 100px;
+  margin-right: 32px;
+}
+
+#sys_title {
+  margin-left: 16px;
+  color: rgb(0, 21, 41);
+  font-size: 16px;
+  font-weight: bold;
 }
 
 #drop_down {
