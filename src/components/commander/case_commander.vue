@@ -181,12 +181,12 @@ let data = [
     name: '地震', //事件名称
     riskEnterpriseId: '东北大学',//风险企业
     processId: 1234,//流程编号
-    reporterName: '刘益先',//报警人
+    reporterName: '接报人',//报警人
     reporterTel: '15029084943',//报警人联系电话
     reportTime: '2019/05/13', //接报时间
     processCreatorName: '流程创建者1', //流程创建者姓名
     processCreationTime: '2019/05/14', //流程创建时间
-    lastModifierName: '王家翼', //最后更新者姓名
+    lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
     commanderComment: '建议别拆', //指挥人员意见
     status: '正在处理' //流程状态
@@ -196,12 +196,12 @@ let data = [
     name: '火灾', //事件名称
     riskEnterpriseId: '东北大学',//风险企业
     processId: 1234,//流程编号
-    reporterName: '刘益先',//报警人
+    reporterName: '接报人',//报警人
     reporterTel: '15029084943',//报警人联系电话
     reportTime: '2019/05/13', //接报时间
     processCreatorName: '流程创建者1', //流程创建者姓名
     processCreationTime: '2019/05/14', //流程创建时间
-    lastModifierName: '王家翼', //最后更新者姓名
+    lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
     commanderComment: '', //指挥人员意见
     status: '等待审批' //流程状态
@@ -211,12 +211,12 @@ let data = [
     name: '触电', //事件名称
     riskEnterpriseId: '东北大学',//风险企业
     processId: 1234,//流程编号
-    reporterName: '刘益先',//报警人
+    reporterName: '接报人',//报警人
     reporterTel: '15029084943',//报警人联系电话
     reportTime: '2019/05/13', //接报时间
     processCreatorName: '流程创建者1', //流程创建者姓名
     processCreationTime: '2019/05/14', //流程创建时间
-    lastModifierName: '王家翼', //最后更新者姓名
+    lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
     commanderComment: '建议别拆', //指挥人员意见
     status: '驳回' //流程状态
