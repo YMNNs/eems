@@ -60,23 +60,58 @@
         </a-descriptions-item>
       </a-descriptions>
       <br>
-      <a-form v-if="caseInfo.status==='等待审批'" ref="formRef" :model="form" :rules="rules" layout="vertical">
-        <a-form-item label="指挥人员意见" name="comment">
-          <a-textarea
-              v-model:value="form.comment"
-              :auto-size="{ minRows: 2, maxRows: 5 }"
-              placeholder="请输入指挥人员意见..."
-              style="width:100%"
-          />
-        </a-form-item>
-        <a-form-item label="审批结果" name="status">
-          <a-select v-model:value="form.status" placeholder="请选择审批结果" style="width: 100%">
-            <a-select-option value="通过">通过</a-select-option>
-            <a-select-option value="驳回">驳回</a-select-option>
-            <a-select-option value="等待专家介入">专家介入</a-select-option>
-          </a-select>
-        </a-form-item>
-      </a-form>
+      <!--      步骤条-->
+      <div id="steps-wrapper" v-if="caseInfo.status === '等待审批'">
+        <a-steps :current="current" progress-dot>
+          <a-step v-for="step in caseInfo.steps" :key="step.key" :description="step.description" :title="step.name"/>
+        </a-steps>
+        <!--步骤-->
+        <div v-if="current <= caseInfo.steps.length - 1" class="steps-content">
+          <a-form v-if="caseInfo.status==='等待审批'" ref="formRef" :model="form" :rules="rules" layout="vertical">
+            <a-form-item label="指挥人员意见" name="comment">
+              <a-textarea
+                  v-model:value="form.comment"
+                  :auto-size="{ minRows: 2, maxRows: 5 }"
+                  placeholder="请输入指挥人员意见..."
+                  style="width:100%"
+              />
+            </a-form-item>
+            <a-form-item label="审批结果" name="status">
+              <a-select v-model:value="form.status" placeholder="请选择审批结果" style="width: 100%">
+                <a-select-option value="通过">通过</a-select-option>
+                <a-select-option value="驳回">驳回</a-select-option>
+                <a-select-option value="等待专家介入">专家介入</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-form>
+        </div>
+
+        <!--        步骤按钮-->
+        <div class="steps-action" v-if="!specialistRequired">
+          <a-button v-if="current < caseInfo.steps.length - 1" type="primary" @click="next">下一步</a-button>
+          <a-button
+              v-if="current === caseInfo.steps.length - 1"
+              type="primary"
+              @click="handleAdd"
+          >
+            完成
+          </a-button>
+          <a-button v-if="current > 0" style="margin-left: 8px" @click="prev">上一步</a-button>
+        </div>
+      </div>
+<!--      结果-->
+      <div v-if="caseInfo.status==='等待专家介入'">
+          <a-result title="已请求专家介入" status="info">
+          </a-result>
+      </div>
+      <div v-if="caseInfo.status==='驳回'">
+          <a-result title="已驳回流程" status="warning">
+          </a-result>
+      </div>
+      <div v-if="caseInfo.status==='通过'">
+          <a-result title="已通过流程" status="success">
+          </a-result>
+      </div>
       <div
           :style="{
         position: 'absolute',
@@ -90,9 +125,9 @@
         zIndex: 1,
       }"
       >
-        <a-button v-if="caseInfo.status==='等待审批'" style="margin-right: 8px" @click="onClose">取消</a-button>
-        <a-button v-else style="margin-right: 8px" @click="onClose">关闭</a-button>
-        <a-button v-if="caseInfo.status==='等待审批'" type="primary" @click="handleAdd">确定</a-button>
+<!--        <a-button v-if="caseInfo.status==='等待审批'" style="margin-right: 8px" @click="onClose">取消</a-button>-->
+        <a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+<!--        <a-button v-if="caseInfo.status==='等待审批'" type="primary" @click="handleAdd">确定</a-button>-->
       </div>
     </a-drawer>
     <!--  表格-->
@@ -166,7 +201,6 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import {defineComponent, reactive, ref} from 'vue';
-import {message} from 'ant-design-vue';
 import "@/util"
 import {
   CheckCircleOutlined,
@@ -188,8 +222,30 @@ let data = [
     processCreationTime: '2019/05/14', //流程创建时间
     lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
-    commanderComment: '建议别拆', //指挥人员意见
-    status: '正在处理' //流程状态
+    status: '正在处理', //流程状态
+    steps: [
+      {
+        key: 0,
+        name: '步骤一',
+        description: '步骤1描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 1,
+        name: '步骤二',
+        description: '步骤2描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 2,
+        name: '步骤三',
+        description: '步骤3描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+    ]
   },
   {
     key: 1, //id
@@ -203,8 +259,30 @@ let data = [
     processCreationTime: '2019/05/14', //流程创建时间
     lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
-    commanderComment: '', //指挥人员意见
-    status: '等待审批' //流程状态
+    status: '等待审批', //流程状态
+    steps: [
+      {
+        key: 0,
+        name: '步骤一',
+        description: '步骤1描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 1,
+        name: '步骤二',
+        description: '步骤2描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 2,
+        name: '步骤三',
+        description: '步骤3描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+    ]
   },
   {
     key: 2, //id
@@ -218,8 +296,30 @@ let data = [
     processCreationTime: '2019/05/14', //流程创建时间
     lastModifierName: '工作人员', //最后更新者姓名
     lastUpdateTime: '2019/05/15',//最后更新时间
-    commanderComment: '建议别拆', //指挥人员意见
-    status: '驳回' //流程状态
+    status: '驳回', //流程状态
+    steps: [
+      {
+        key: 0,
+        name: '步骤一',
+        description: '步骤1描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 1,
+        name: '步骤二',
+        description: '步骤2描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+      {
+        key: 2,
+        name: '步骤三',
+        description: '步骤3描述',
+        commanderComment: '', //指挥人员意见
+        status: '等待审批'
+      },
+    ]
   },
 ]
 
@@ -233,6 +333,29 @@ export default defineComponent({
       },
 
       setup() {
+
+        const specialistRequired = ref(false);
+        const rejected = ref(false);
+        const valid = ref(false);
+
+
+        const current = ref(0);
+
+        const next = () => {
+          // caseInfo.steps[current.value].commanderComment = form.comment;
+          // caseInfo.steps[current.value].status = form.status;
+          handleAdd();
+
+          // } else {
+          //   if (valid.value) {
+          //     current.value++;
+          //   }
+          // }
+        };
+
+        const prev = () => {
+          current.value--;
+        };
 
         const formRef = ref();
 
@@ -273,12 +396,13 @@ export default defineComponent({
           processCreationTime: '', //流程创建时间
           lastModifierName: '', //最后更新者姓名
           lastUpdateTime: '',//最后更新时间
-          commanderComment: '', //指挥人员意见
+          steps: [], //步骤
           status: '' //流程状态
         })
 
         const showDrawer = (key) => {
           console.log('打开抽屉')
+          current.value = 0;
           for (let datum of data) {
             if (datum.key === key) {
               caseInfo.key = datum.key;
@@ -292,12 +416,14 @@ export default defineComponent({
               caseInfo.processCreationTime = datum.processCreationTime;
               caseInfo.lastModifierName = datum.lastModifierName;
               caseInfo.lastUpdateTime = datum.lastUpdateTime;
-              caseInfo.commanderComment = datum.commanderComment;
               caseInfo.status = datum.status;
+              caseInfo.steps = JSON.parse(JSON.stringify(datum.steps));
               break
             }
           }
           visible.value = true;
+          specialistRequired.value = false;
+          rejected.value = false;
         };
 
         const onClose = () => {
@@ -320,22 +446,45 @@ export default defineComponent({
         });
 
         const handleAdd = () => {
+          valid.value = false;
           formRef.value
               .validate()
               .then(() => {
+                valid.value = true;
                 console.log('提交数据')
                 for (let datum of dataSource.value) {
                   if (datum.key === caseInfo.key) {
-                    datum.commanderComment = form.comment;
-                    datum.status = form.status;
+                    // datum.commanderComment = form.comment;
+                    // datum.status = form.status;
+                    caseInfo.steps[current.value].commanderComment = form.comment;
+                    caseInfo.steps[current.value].status = form.status;
+                    datum.steps[current.value].commanderComment = form.comment;
+                    datum.steps[current.value].status = form.status;
+                    if (caseInfo.steps[current.value].status === '等待专家介入') {
+                      caseInfo.status = '等待专家介入';
+                    } else if (caseInfo.steps[current.value].status === '驳回') {
+                      caseInfo.status = '驳回';
+                    }
+                    if (datum.steps[current.value].status === '等待专家介入') {
+                      datum.status = '等待专家介入'
+                    }
+                    if (datum.steps[current.value].status === '驳回') {
+                      datum.status = '驳回'
+                    }
+
                     datum.lastModifierName = localStorage.getItem('username')
                     datum.lastUpdateTime = new Date().Format('yyyy/MM/dd')
+                    if (form.status ==='通过'){
+                      current.value ++;
+                    }
+                    if (current.value>= caseInfo.steps.length){
+                      datum.status = '通过';
+                      caseInfo.status = '通过';
+                    }
                     break
                   }
                 }
                 resetForm()
-                onClose()
-                message.success("已完成 1 件审批。")
               })
               .catch(error => {
                 console.log('error', error);
@@ -460,7 +609,12 @@ export default defineComponent({
           handleAdd,
           handleSearch,
           handleReset,
-          searchInput
+          searchInput,
+          current,
+          prev,
+          next,
+          specialistRequired,
+          rejected,
         };
       },
     },
@@ -470,5 +624,19 @@ export default defineComponent({
 <style scoped>
 .row-operations a {
   margin-right: 8px;
+}
+
+#steps-wrapper {
+  margin-top: 60px;
+}
+
+.steps-content {
+  margin: 48px 48px 48px 32px;
+  /*border: 1px dashed #e9e9e9;*/
+  /*border-radius: 6px;*/
+  /*background-color: #fafafa;*/
+  /*min-height: 200px;*/
+  /*text-align: center;*/
+  /*padding-top: 80px;*/
 }
 </style>
