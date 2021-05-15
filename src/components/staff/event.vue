@@ -8,7 +8,7 @@
   </a-page-header>
   <br/>
 
-  <a-row type="flex" justify="space-around">
+  <a-row type="flex" justify="space-around" align="middle">
     <a-col :span="4">
       <a-card title="事件">
         <template #extra>
@@ -64,6 +64,7 @@
           <a-descriptions-item label="备注">{{ selectData.desc }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
+      <a-empty v-if="!showDetail" :image="simpleImage"/>
     </a-col>
     <a-col :span="2"/>
   </a-row>
@@ -149,7 +150,7 @@
 </template>
 
 <script>
-import {message} from 'ant-design-vue';
+import {message, Empty} from 'ant-design-vue';
 import {
   DatabaseOutlined,
   ContainerOutlined,
@@ -381,13 +382,16 @@ export default defineComponent({
               arr.splice(index, 1);
             else
               item.children.forEach((item, index, arr) => {
-                if (item.key === str)
+                if (item.key === str) {
                   arr.splice(index, 1);
+                  if (item.key === selectedKeys.value[0])
+                    selectedKeys.value = [];
+                }
               })
           })
         });
-        message.success('删除成功！')
-        checkedKeys.value = []
+        message.success('删除成功！');
+        checkedKeys.value = [];
       }
 
     };
@@ -407,7 +411,8 @@ export default defineComponent({
       onClose,
       onSubmit,
       formRef,
-      selectType
+      selectType,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
     };
   },
 });
