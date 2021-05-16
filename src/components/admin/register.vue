@@ -283,16 +283,27 @@ let data = [
   },
   {
     key: 2,
+    userId: 'staff2',
+    name: '工作人员2',
+    password: '1234',
+    gender: '男',
+    dob: '2021/05/10',
+    role: '工作人员',
+    status: '停用'
+  },
+  {
+    key: 3,
     userId: 'commander',
     name: '指挥人员1',
     password: '123',
     gender: '男',
     dob: '2021/05/10',
     role: '指挥人员',
+
     status: '正常'
   },
   {
-    key: 3,
+    key: 4,
     userId: 'specialist',
     name: '专家1',
     password: '123',

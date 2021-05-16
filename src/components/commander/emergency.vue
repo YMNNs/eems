@@ -124,7 +124,7 @@
           <p v-for="key in targetKeysMaterial" v-bind:key="key">{{ key }}</p>
         </a-descriptions-item>
         <a-descriptions-item label="路线长度">
-          <p>16km</p>
+          <p>14km</p>
         </a-descriptions-item>
         <a-descriptions-item label="预计用时">
           <p>20分钟</p>
