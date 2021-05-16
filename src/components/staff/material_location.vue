@@ -94,9 +94,7 @@
         <template #operation="{ record }">
           <div class="editable-row-operations">
               <span v-if="editableData[record.key]">
-                <a-popconfirm title="确定保存吗？" @confirm="save(record.key)">
-                  <a>保存</a>
-                </a-popconfirm>
+                  <a @click="save(record.key)">保存</a>
                 <a-popconfirm title="确定取消吗？" @confirm="cancel(record.key)">
                   <a>取消</a>
                 </a-popconfirm>
