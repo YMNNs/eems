@@ -91,7 +91,7 @@
               <template #enterButton>
                 <a-button>
                   <template #icon>
-                    <RollbackOutlined/>
+                    <UndoOutlined />
                   </template>
                 </a-button>
               </template>
@@ -158,7 +158,7 @@ import {
   DeleteOutlined,
   CheckOutlined,
   PlusOutlined,
-  RollbackOutlined
+  UndoOutlined
 } from '@ant-design/icons-vue';
 import {defineComponent, reactive, ref, watch} from 'vue';
 
@@ -170,7 +170,7 @@ export default defineComponent({
     DeleteOutlined,
     CheckOutlined,
     PlusOutlined,
-    RollbackOutlined,
+    UndoOutlined,
     VNodes: (_, {attrs}) => {
       return attrs.vnodes;
     },
@@ -339,9 +339,9 @@ export default defineComponent({
             desc: form.desc,
           })
           onClose();
-          message.success('添加成功！');
+          message.success('已添加 1 个事件');
         } else
-          message.warn('事件已存在');
+          message.warn('名称重复：请为事件指定一个不同的名称');
 
 
       })
@@ -374,7 +374,7 @@ export default defineComponent({
     // })
     const deleteEvent = () => {
       if (checkedKeys.value.length === 0)
-        message.error('没有选择任何事件！');
+        message.error('请至少选择 1 个条目');
       else {
         checkedKeys.value.forEach((str) => {
           treeData.forEach((item, index, arr) => {
@@ -390,7 +390,7 @@ export default defineComponent({
               })
           })
         });
-        message.success('删除成功！');
+        message.success(`已删除 ${checkedKeys.value.length} 个条目`);
         checkedKeys.value = [];
       }
 
