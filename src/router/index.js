@@ -61,7 +61,7 @@ export const constantRoutes = [
                 path: '/register',
                 component: register,
                 name: 'register',
-                meta: {title: '注册', role: ['admin'], icon: 'icon-Team'}
+                meta: {title: '用户管理', role: ['admin'], icon: 'icon-Team'}
             }, {
                 path: '/event',
                 component: event,

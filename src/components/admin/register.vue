@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--    页头-->
-    <a-page-header sub-title="通过此页面向系统中添加，查询，修改用户信息以及删除用户。" title="注册" @back="() => $router.go(-1)">
+    <a-page-header sub-title="通过此页面向系统中添加，查询，修改用户信息以及删除用户。" title="用户管理" @back="() => $router.go(-1)">
       <template #tags>
         <a-tag color="orange">管理员</a-tag>
       </template>
