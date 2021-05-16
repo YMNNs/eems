@@ -199,14 +199,14 @@ export default defineComponent({
       {
         title: '编号',
         dataIndex: 'key',
-        width: '15%',
+        width: '10%',
         slots: {
           customRender: 'key',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.key.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -246,7 +246,7 @@ export default defineComponent({
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.quantity.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -266,7 +266,7 @@ export default defineComponent({
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.staff.name.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -286,7 +286,7 @@ export default defineComponent({
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.staff.tel.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -306,7 +306,7 @@ export default defineComponent({
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.date.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -317,7 +317,7 @@ export default defineComponent({
         },
       },
       {
-        title: 'operation',
+        title: '操作',
         dataIndex: 'operation',
         width: '10%',
         slots: {
@@ -415,10 +415,10 @@ export default defineComponent({
     });
 
     const rules = {
-      name: [{required: true, message: 'please enter url'}],
-      quantity: [{required: true, message: 'Please select an owner'}],
-      staff: [{required: true, message: 'Please choose the type'}],
-      date: [{required: true, message: 'Please choose the approver'}],
+      name: [{required: true, message: '请输入物资名称'}],
+      quantity: [{required: true, message: '请输入物资数量'}],
+      staff: [{required: true, message: '请选择清点人'}],
+      date: [{required: true, message: '请选择日期'}],
     };
 
     const visible = ref(false);

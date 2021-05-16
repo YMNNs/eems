@@ -8,8 +8,8 @@
   </a-page-header>
   <br/>
   <a-row type="flex" justify="space-around" align="middle">
-    <!--    <a-col :span="2"/>-->
-    <a-col :span="24">
+    <a-col :span="2"/>
+    <a-col :span="20">
 
       <a-button @click="handleAdd" style="margin-bottom: 8px" type="primary">
         <template #icon>
@@ -47,15 +47,47 @@
         <template #filterIcon="filtered">
           <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
         </template>
-        <template v-for="col in ['name', 'age', 'address']" #[col]="{ text, record }" :key="col">
+        <template #goods="{ record }">
+          <div>
+            <a-select
+                mode="multiple"
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['goods']"
+                style="width: 350px"
+            >
+              <a-select-option v-for="item in goods" :key='item' :value='item'>{{ item }}
+              </a-select-option>
+            </a-select>
+            <template v-else>
+              <a-tag color="default" v-for="item in record.goods" :key="item">{{ item }}</a-tag>
+            </template>
+          </div>
+        </template>
+        <template #location="{ record }">
+          <div>
+            <a-select
+                mode="multiple"
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['location']"
+                style="width: 350px"
+            >
+              <a-select-option v-for="item in location" :key='item' :value='item'>{{ item }}
+              </a-select-option>
+            </a-select>
+            <template v-else>
+              <a-tag color="default" v-for="item in record.location" :key="item">{{ item }}</a-tag>
+            </template>
+          </div>
+        </template>
+        <template #name="{record}">
           <div>
             <a-input
                 v-if="editableData[record.key]"
-                v-model:value="editableData[record.key][col]"
+                v-model:value="editableData[record.key]['name']"
                 style="margin: -5px 0"
             />
             <template v-else>
-              {{ text }}
+              {{ record.name }}
             </template>
           </div>
         </template>
@@ -80,79 +112,40 @@
       </a-table>
 
     </a-col>
-    <!--    <a-col :span="2"/>-->
+    <a-col :span="2"/>
   </a-row>
   <a-drawer
-      title="Create a new account"
-      :width="720"
+      title="新建物资位置"
+      :width="480"
       :visible="visible"
       :body-style="{ paddingBottom: '80px' }"
       @close="onClose"
   >
     <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
       <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Name" name="name">
-            <a-input v-model:value="form.name" placeholder="Please enter user name" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Url" name="url">
-            <a-input
-                v-model:value="form.url"
-                style="width: 100%"
-                addon-before="http://"
-                addon-after=".com"
-                placeholder="please enter url"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Owner" name="owner">
-            <a-select placeholder="Please a-s an owner" v-model:value="form.owner">
-              <a-select-option value="xiao">Xiaoxiao Fu</a-select-option>
-              <a-select-option value="mao">Maomao Zhou</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Type" name="type">
-            <a-select placeholder="Please choose the type" v-model:value="form.type">
-              <a-select-option value="private">Private</a-select-option>
-              <a-select-option value="public">Public</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Approver" name="approver">
-            <a-select placeholder="Please choose the approver" v-model:value="form.approver">
-              <a-select-option value="jack">Jack Ma</a-select-option>
-              <a-select-option value="tom">Tom Liu</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="DateTime" name="dateTime">
-            <a-date-picker
-                v-model:value="form.dateTime"
-                style="width: 100%"
-                :get-popup-container="trigger => trigger.parentNode"
-            />
+        <a-col :span="24">
+          <a-form-item label="物资名称" name="name">
+            <a-input v-model:value="form.name" placeholder="请输入物资名称"/>
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="Description" name="description">
-            <a-textarea
-                v-model:value="form.description"
-                :rows="4"
-                placeholder="please enter url description"
-            />
+          <a-form-item label="物资信息" name="goods">
+            <a-select placeholder="请选择物资信息" mode="multiple" v-model:value="form.goods">
+              <a-select-option v-for="item in goods" :key='item' :value='item'>{{ item }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="物资存放地点" name="location">
+            <a-select placeholder="请选择物资存放地点" mode="multiple" v-model:value="form.location">
+              <a-select-option v-for="item in location" :key='item' :value='item'>{{ item }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -170,8 +163,8 @@
         zIndex: 1,
       }"
     >
-      <a-button style="margin-right: 8px" @click="onClose">Cancel</a-button>
-      <a-button type="primary" @click="onSubmit">Submit</a-button>
+      <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+      <a-button type="primary" @click="onSubmit">提交</a-button>
     </div>
   </a-drawer>
 </template>
@@ -179,7 +172,7 @@
 <script>
 import {message} from 'ant-design-vue';
 import {cloneDeep} from 'lodash-es';
-import {computed, defineComponent, reactive, ref} from 'vue';
+import {defineComponent, reactive, ref} from 'vue';
 import {SearchOutlined, PlusOutlined} from '@ant-design/icons-vue';
 
 export default defineComponent({
@@ -190,9 +183,29 @@ export default defineComponent({
   setup() {
     const columns = [
       {
-        title: 'name',
+        title: '编号',
+        dataIndex: 'key',
+        width: '10%',
+        slots: {
+          customRender: 'key',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.key.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '物资名称',
         dataIndex: 'name',
-        width: '25%',
+        width: '15%',
         slots: {
           customRender: 'name',
           filterDropdown: 'filterDropdown',
@@ -210,16 +223,16 @@ export default defineComponent({
         },
       },
       {
-        title: 'age',
-        dataIndex: 'age',
-        width: '15%',
+        title: '物资内容',
+        dataIndex: 'goods',
+        width: '30%',
         slots: {
-          customRender: 'age',
+          customRender: 'goods',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.goods.join('').toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -230,16 +243,16 @@ export default defineComponent({
         },
       },
       {
-        title: 'address',
-        dataIndex: 'address',
-        width: '40%',
+        title: '物资存放地点',
+        dataIndex: 'location',
+        width: '30%',
         slots: {
-          customRender: 'address',
+          customRender: 'location',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.location.join('').toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -250,24 +263,34 @@ export default defineComponent({
         },
       },
       {
-        title: 'operation',
+        title: '操作',
         dataIndex: 'operation',
+        width: '15%',
         slots: {
           customRender: 'operation',
         },
       },
     ];
 
-    const data = [];
+    const data = [
+      {
+        key: '0',
+        name: '求生三件套',
+        goods: ['矿泉水', '衣物', '干粮'],
+        location: ['浑南仓库', '沈北仓库'],
+      }, {
+        key: '1',
+        name: '电动车',
+        goods: ['小电动车'],
+        location: ['浑南仓库'],
+      }
+    ];
 
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i.toString(),
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-      });
-    }
+    let index = 2;
+
+    const goods = ['矿泉水', '衣物', '干粮', '小电动车'];
+
+    const location = ['浑南仓库', '沈北仓库'];
 
 
     const dataSource = ref(data);
@@ -292,16 +315,8 @@ export default defineComponent({
       message.success('已删除 1 个条目')
     };
     const handleAdd = () => {
-      const newData = {
-        key: `${count.value}`,
-        name: `Edward King ${count.value}`,
-        age: 32,
-        address: `London, Park Lane no. ${count.value}`,
-      };
-      dataSource.value.push(newData);
       showDrawer();
     };
-    const count = computed(() => dataSource.value.length + 1);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
       confirm();
@@ -323,22 +338,14 @@ export default defineComponent({
 
     const form = reactive({
       name: '',
-      url: '',
-      owner: '',
-      type: '',
-      approver: '',
-      dateTime: '',
-      description: '',
+      goods: [],
+      location: [],
     });
 
     const rules = {
-      name: [{ required: true, message: 'Please enter user name' }],
-      url: [{ required: true, message: 'please enter url' }],
-      owner: [{ required: true, message: 'Please select an owner' }],
-      type: [{ required: true, message: 'Please choose the type' }],
-      approver: [{ required: true, message: 'Please choose the approver' }],
-      dateTime: [{ required: true, message: 'Please choose the dateTime', type: 'object' }],
-      description: [{ required: true, message: 'Please enter url description' }],
+      name: [{required: true, message: '请输入物资名称'}],
+      goods: [{required: true, message: '请选择物资内容'}],
+      location: [{required: true, message: '请选择物资存放地点'}],
     };
 
     const visible = ref(false);
@@ -355,10 +362,10 @@ export default defineComponent({
     const onSubmit = () => {
       formRef.value.validate().then(() => {
         const newData = {
-          key: `${count.value}`,
-          name: `Edward King ${count.value}`,
-          age: 32,
-          address: `London, Park Lane no. ${count.value}`,
+          key: index.toString(),
+          name: form.name,
+          goods: form.goods,
+          location: form.location,
         };
         dataSource.value.push(newData);
         message.success('已添加 1 个条目');
@@ -370,6 +377,8 @@ export default defineComponent({
 
     return {
       dataSource,
+      goods,
+      location,
       columns,
       editingKey: '',
       editableData,
