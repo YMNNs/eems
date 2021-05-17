@@ -8,8 +8,8 @@
       <br>
       <a-row type="flex">
         <a-statistic :style="{margin:' 0 32px'}" :value="dataSource.length" title="总用户数"/>
-        <a-statistic :style="{margin:' 0 32px'}" :value="enabledUserCount()" title="正常"/>
-        <a-statistic :style="{margin:' 0 32px'}" :value="dataSource.length - enabledUserCount()" title="停用"/>
+        <a-statistic :style="{margin:' 0 32px'}" :value="enabledUserCount" title="正常"/>
+        <a-statistic :style="{margin:' 0 32px'}" :value="dataSource.length - enabledUserCount" title="停用"/>
       </a-row>
     </a-page-header>
     <br>
@@ -256,7 +256,8 @@
 
 <script>
 import {SearchOutlined, DownOutlined, PlusOutlined} from '@ant-design/icons-vue';
-import {defineComponent, reactive, ref, computed, toRaw} from 'vue';
+// eslint-disable-next-line no-unused-vars
+import {defineComponent, reactive, ref, computed, toRaw, watch} from 'vue';
 import {message} from 'ant-design-vue';
 import {cloneDeep} from 'lodash-es';
 
@@ -382,6 +383,8 @@ export default defineComponent({
 
     const visible = ref(false);
 
+
+
     const dateFormat = 'YYYY/MM/DD';
 
     const state = reactive({
@@ -439,7 +442,6 @@ export default defineComponent({
     const save = key => {
       Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
       delete editableData[key];
-      this.enabledUserCount();
       message.success('编辑已保存。')
     };
 
@@ -601,6 +603,11 @@ export default defineComponent({
       state.searchText = '';
     };
 
+    const enabledUserCount = ref(dataSource.value.filter(item => '正常' === item.status).length);
+
+    watch(dataSource,()=>{
+      enabledUserCount.value = dataSource.value.filter(item => '正常' === item.status).length;
+    })
 
     const searchInput = ref();
 
@@ -629,21 +636,8 @@ export default defineComponent({
       onClose,
       resetForm,
       formRef,
+      enabledUserCount,
     };
-  },
-
-  methods: {
-    enabledUserCount: function () {
-      let counter = 0
-      for (let datum of data) {
-        if (datum.status === '正常') {
-          counter++
-        }
-      }
-      console.log(counter)
-      return counter
-    },
-
   },
 
   components: {

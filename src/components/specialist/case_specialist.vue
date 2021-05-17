@@ -161,7 +161,7 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import {defineComponent, reactive, ref} from 'vue';
+import {defineComponent, reactive, ref, watch} from 'vue';
 import {message} from 'ant-design-vue';
 import "@/util"
 import {
@@ -318,6 +318,11 @@ export default defineComponent({
           reviewed: dataSource.value.filter(item => item.status === '通过' || item.status === '驳回').length,
           searchText: '',
           searchedColumn: '',
+        });
+
+        watch(dataSource,()=>{
+          state.reviewed = dataSource.value.filter(item => item.status === '通过' || item.status === '驳回').length;
+          state.pendingReview = dataSource.value.filter(item => item.status === '等待审批').length;
         });
 
         const handleAdd = () => {
