@@ -14,7 +14,7 @@
         <template #icon>
           <PlusOutlined/>
         </template>
-        新增流程
+        新增城市
       </a-button>
       <a-table :columns="columns" :data-source="dataSource">
         <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
@@ -46,49 +46,74 @@
         <template #filterIcon="filtered">
           <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
         </template>
-        <template #name="{ record }">
-          <div>
-            <a-input
-                v-if="editableData[record.key]"
-                v-model:value="editableData[record.key]['name']"
-                style="margin: -5px 0"
-            />
-            <template v-else>
-              {{ record.name }}
-            </template>
-          </div>
-        </template>
-        <template #eventType="{ record }">
+        <template #province="{ record }">
           <div>
             <a-select
                 v-if="editableData[record.key]"
-                v-model:value="editableData[record.key]['eventType']"
+                v-model:value="editableData[record.key]['province']"
                 style="width: 150px"
-                @change="() => {editableData[record.key]['eventName'] = '';}"
+                @change="() => {editableData[record.key]['name'] = '';}"
             >
-              <a-select-option v-for="item in event" :key='item.type' :value='item.type'>
-                {{ item.type }}
+              <a-select-option v-for="item in province" :key='item.name' :value='item.name'>
+                {{ item.name }}
               </a-select-option>
             </a-select>
             <template v-else>
-              {{ record.eventType }}
+              {{ record.province }}
             </template>
           </div>
         </template>
-        <template #eventName="{ record }">
+        <template #name="{ record }">
           <div>
             <a-select
                 v-if="editableData[record.key]"
-                v-model:value="editableData[record.key]['eventName']"
+                v-model:value="editableData[record.key]['name']"
                 style="width: 150px"
             >
-              <a-select-option v-for="item in getEvent(editableData[record.key]['eventType'])['event']" :key='item.name'
+              <a-select-option v-for="item in getProvince(editableData[record.key]['province'])['city']"
+                               :key='item.name'
                                :value='item.name'>
                 {{ item.name }}
               </a-select-option>
             </a-select>
             <template v-else>
-              {{ record.eventName }}
+              {{ record.name }}
+            </template>
+          </div>
+        </template>
+        <template #rescue="{ record }">
+          <div>
+            <a-input
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['rescue']"
+                style="margin: -5px 0"
+            />
+            <template v-else>
+              {{ record.rescue }}
+            </template>
+          </div>
+        </template>
+        <template #car="{ record }">
+          <div>
+            <a-input
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['car']"
+                style="margin: -5px 0"
+            />
+            <template v-else>
+              {{ record.car }}
+            </template>
+          </div>
+        </template>
+        <template #code="{ record }">
+          <div>
+            <a-input
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['code']"
+                style="margin: -5px 0"
+            />
+            <template v-else>
+              {{ record.code }}
             </template>
           </div>
         </template>
@@ -109,7 +134,7 @@
           </div>
         </template>
         <template #expandedRowRender="{ record }">
-          <a-table bordered :columns="innerColumns" :data-source="record.processes" :pagination="false">
+          <a-table bordered :columns="innerColumns" :data-source="record.traffic" :pagination="false">
             <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
               <div style="padding: 8px">
                 <a-input
@@ -139,15 +164,65 @@
             <template #filterIcon="filtered">
               <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
             </template>
-            <template #name="{ record }">
+            <template #origin="{ record }">
+              <div>
+                <a-select
+                    v-if="editableData[record.dataKey]"
+                    v-model:value="editableData[record.dataKey]['traffic'][parseInt(record.key)]['origin']"
+                    style="width: 150px"
+                >
+                  <a-select-option
+                      v-for="item in getCity(editableData[record.dataKey]['province'], editableData[record.dataKey]['name'])['location']"
+                      :key='item.name'
+                      :value='item.name'>
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+                <template v-else>
+                  {{ record.origin }}
+                </template>
+              </div>
+            </template>
+            <template #dest="{ record }">
+              <div>
+                <a-select
+                    v-if="editableData[record.dataKey]"
+                    v-model:value="editableData[record.dataKey]['traffic'][parseInt(record.key)]['dest']"
+                    style="width: 150px"
+                >
+                  <a-select-option
+                      v-for="item in getCity(editableData[record.dataKey]['province'], editableData[record.dataKey]['name'])['location']"
+                      :key='item.name'
+                      :value='item.name'>
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+                <template v-else>
+                  {{ record.dest }}
+                </template>
+              </div>
+            </template>
+            <template #length="{ record }">
               <div>
                 <a-input
                     v-if="editableData[record.dataKey]"
-                    v-model:value="editableData[record.dataKey]['processes'][parseInt(record.key)]['name']"
+                    v-model:value="editableData[record.dataKey]['traffic'][parseInt(record.key)]['length']"
                     style="margin: -5px 0"
                 />
                 <template v-else>
-                  {{ record.name }}
+                  {{ record.length }}
+                </template>
+              </div>
+            </template>
+            <template #desc="{ record }">
+              <div>
+                <a-input
+                    v-if="editableData[record.dataKey]"
+                    v-model:value="editableData[record.dataKey]['traffic'][parseInt(record.key)]['desc']"
+                    style="margin: -5px 0"
+                />
+                <template v-else>
+                  {{ record.desc }}
                 </template>
               </div>
             </template>
@@ -165,7 +240,7 @@
             <template #icon>
               <PlusOutlined/>
             </template>
-            新增事件
+            新增路线
           </a-button>
         </template>
       </a-table>
@@ -182,16 +257,9 @@
     <a-form ref="formRefP" :model="formP" :rules="rulesP" layout="vertical">
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="流程名称" name="name">
-            <a-input v-model:value="formP.name" placeholder="请输入流程名称"/>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="16">
-        <a-col :span="24">
-          <a-form-item label="事件类型" name="eventType">
-            <a-select placeholder="请选择事件类型" v-model:value="formP.eventType" @change="formP.eventName = ''">
-              <a-select-option v-for="item in event" :key='item.type' :value='item.type'>{{ item.type }}
+          <a-form-item label="省份" name="province">
+            <a-select placeholder="请选择省份" v-model:value="formP.province" @change="formP.name = ''">
+              <a-select-option v-for="item in province" :key='item.name' :value='item.name'>{{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -199,13 +267,34 @@
       </a-row>
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="事件" name="eventName">
-            <a-select placeholder="请选择事件" v-model:value="formP.eventName">
-              <a-select-option
-                  v-for="item in (formP.eventType === '')?[{name: ''}]:event.filter(eventItem => eventItem.type === formP.eventType)[0]['event']"
-                  :key='item.name' :value='item.name'>{{ item.name }}
+          <a-form-item label="城市" name="name">
+            <a-select placeholder="请选择城市" v-model:value="formP.name">
+              <a-select-option v-for="item in (formP.province === '')?[{name: ''}]:getProvince(formP.province)['city']"
+                               :key='item.name' :value='item.name'>
+                {{ item.name }}
               </a-select-option>
             </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="救援人数" name="rescue">
+            <a-input v-model:value="formP.rescue" placeholder="请输入救援人数"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="车辆数" name="car">
+            <a-input v-model:value="formP.car" placeholder="请输入车辆数"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="邮政编码" name="code">
+            <a-input v-model:value="formP.code" placeholder="请输入邮政编码"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -228,7 +317,7 @@
     </div>
   </a-drawer>
   <a-drawer
-      title="新建步骤"
+      title="新建路线"
       :width="480"
       :visible="visibleS"
       :body-style="{ paddingBottom: '80px' }"
@@ -237,8 +326,43 @@
     <a-form ref="formRefS" :model="formS" :rules="rulesS" layout="vertical">
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="步骤名称" name="name">
-            <a-input v-model:value="formS.name" placeholder="请输入步骤名称"/>
+          <a-form-item label="起点" name="origin">
+            <a-select placeholder="请选择起点" v-model:value="formS.origin">
+              <a-select-option
+                  v-for="item in (selectKey === '')?[{name: ''}]:getCity(dataSource[selectKey].province, dataSource[selectKey].name)['location']"
+                  :key='item.name' :value='item.name'>{{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="终点" name="dest">
+            <a-select placeholder="请选择起点" v-model:value="formS.dest">
+              <a-select-option
+                  v-for="item in (selectKey === '')?[{name: ''}]:getCity(dataSource[selectKey].province, dataSource[selectKey].name)['location']"
+                  :key='item.name' :value='item.name'>{{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="路径长度" name="length">
+            <a-input v-model:value="formS.length" placeholder="请输入路径长度"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="描述" name="desc">
+            <a-textarea
+                v-model:value="formS.desc"
+                :rows="4"
+                placeholder="请输入描述"
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -286,7 +410,7 @@ export default defineComponent({
       {
         title: '编号',
         dataIndex: 'key',
-        width: '15%',
+        width: '10%',
         slots: {
           customRender: 'key',
           filterDropdown: 'filterDropdown',
@@ -304,9 +428,9 @@ export default defineComponent({
         },
       },
       {
-        title: '流程名称',
+        title: '城市',
         dataIndex: 'name',
-        width: '25%',
+        width: '15%',
         slots: {
           customRender: 'name',
           filterDropdown: 'filterDropdown',
@@ -324,16 +448,16 @@ export default defineComponent({
         },
       },
       {
-        title: '事件类型',
-        dataIndex: 'eventType',
-        width: '20%',
+        title: '省份',
+        dataIndex: 'province',
+        width: '15%',
         slots: {
-          customRender: 'eventType',
+          customRender: 'province',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.eventType.toString().toLowerCase().includes(value.toLowerCase()),
+            record.province.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -344,11 +468,51 @@ export default defineComponent({
         },
       },
       {
-        title: '事件名称',
-        dataIndex: 'eventName',
-        width: '20%',
+        title: '救援人数',
+        dataIndex: 'rescue',
+        width: '15%',
         slots: {
-          customRender: 'eventName',
+          customRender: 'rescue',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.rescue.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '车辆数',
+        dataIndex: 'car',
+        width: '15%',
+        slots: {
+          customRender: 'car',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.car.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '邮政编码',
+        dataIndex: 'code',
+        width: '15%',
+        slots: {
+          customRender: 'code',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
@@ -395,16 +559,76 @@ export default defineComponent({
         },
       },
       {
-        title: '步骤名称',
-        dataIndex: 'name',
-        width: '30%',
+        title: '起点',
+        dataIndex: 'origin',
+        width: '15%',
         slots: {
-          customRender: 'name',
+          customRender: 'origin',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
             record.name.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '终点',
+        dataIndex: 'dest',
+        width: '15%',
+        slots: {
+          customRender: 'dest',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '路线长度',
+        dataIndex: 'length',
+        width: '15%',
+        slots: {
+          customRender: 'length',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.length.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '描述',
+        dataIndex: 'desc',
+        width: '30%',
+        slots: {
+          customRender: 'desc',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.desc.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -424,69 +648,165 @@ export default defineComponent({
       }
     ];
 
-    const event = [
+    const province = [
       {
-        type: '自然灾害',
-        event: [
+        name: '辽宁省',
+        city: [
           {
-            name: '洪涝灾害',
+            name: '沈阳市',
+            location: [
+              {
+                name: '浑南仓库',
+              },
+              {
+                name: '沈北仓库',
+              },
+              {
+                name: '和平仓库',
+              },
+              {
+                name: '沈河仓库',
+              }
+            ],
           },
           {
-            name: '台风',
+            name: '大连市',
+            location: [
+              {
+                name: '中山仓库',
+              },
+              {
+                name: '西岗仓库',
+              },
+              {
+                name: '沙河口仓库',
+              },
+              {
+                name: '高新仓库',
+              }
+            ],
+          },
+          {
+            name: '鞍山市',
+            location: [
+              {
+                name: '铁东仓库',
+              },
+              {
+                name: '铁西仓库',
+              },
+              {
+                name: '立山仓库',
+              },
+              {
+                name: '千山仓库',
+              }
+            ],
           },
         ]
       },
       {
-        type: '公共卫生事件',
-        event: [
+        name: '吉林省',
+        city: [
           {
-            name: '新冠疫情',
+            name: '长春市',
+            location: [
+              {
+                name: '二道仓库',
+              },
+              {
+                name: '南关仓库',
+              },
+              {
+                name: '宽城仓库',
+              },
+              {
+                name: '绿园仓库',
+              }
+            ],
+          },
+          {
+            name: '吉林市',
+            location: [
+              {
+                name: '船营仓库',
+              },
+              {
+                name: '昌邑仓库',
+              },
+              {
+                name: '龙潭仓库',
+              },
+              {
+                name: '丰满仓库',
+              }
+            ],
           },
         ]
       },
     ]
 
-    const getEvent = (eventType) => {
-      return event.filter(item => item.type === eventType)[0]
+    const getProvince = (provinceName) => {
+      return province.filter(item => item.name === provinceName)[0]
+    }
+
+    const getCity = (provinceName, name) => {
+      return getProvince(provinceName).city.filter(item => item.name === name)[0]
     }
 
     const data = [
       {
         key: '0',
-        name: '台风应急',
-        province: '自然灾害',
-        aidNum: '台风',
-        processes: [
+        name: '沈阳市',
+        province: '辽宁省',
+        rescue: '50',
+        car: '200',
+        code: '110000',
+        traffic: [
           {
             dataKey: '0',
             key: '0',
-            name: '发布预警',
+            origin: '浑南仓库',
+            dest: '沈北仓库',
+            length: '5km',
+            desc: '呵呵',
           },
           {
             dataKey: '0',
             key: '1',
-            name: '组织疏散和转移',
-          }
+            origin: '和平仓库',
+            dest: '沈河仓库',
+            length: '10km',
+            desc: '哈哈',
+          },
         ]
       },
       {
         key: '1',
-        name: '台风应急',
-        eventType: '自然灾害',
-        eventName: '台风',
-        processes: [
+        name: '大连市',
+        province: '辽宁省',
+        rescue: '40',
+        car: '400',
+        code: '116000',
+        traffic: [
           {
             dataKey: '1',
             key: '0',
-            name: '发布预警',
+            origin: '中山仓库',
+            dest: '高新仓库',
+            length: '5km',
+            desc: '呵呵',
           },
           {
             dataKey: '1',
             key: '1',
-            name: '组织疏散和转移',
-          }
+            origin: '高新仓库',
+            dest: '中山仓库',
+            length: '10km',
+            desc: '哈哈',
+          },
         ]
-      }
+      },
     ]
     const dataSource = ref(data);
 
@@ -535,14 +855,18 @@ export default defineComponent({
 
     const formP = reactive({
       name: '',
-      eventType: '',
-      eventName: '',
+      province: '',
+      rescue: '',
+      car: '',
+      code: '',
     });
 
     const rulesP = {
-      name: [{required: true, message: '请输入流程名称'}],
-      eventType: [{required: true, message: '请选择事件类型'}],
-      eventName: [{required: true, message: '请选择事件'}],
+      name: [{required: true, message: '请选择城市'}],
+      province: [{required: true, message: '请选择省份'}],
+      rescue: [{required: true, message: '请输入救援人数'}],
+      car: [{required: true, message: '请输入车辆数'}],
+      code: [{required: true, message: '请输入邮政编码'}],
     };
 
     const visibleP = ref(false);
@@ -562,10 +886,12 @@ export default defineComponent({
       formRefP.value.validate().then(() => {
         const newData = {
           key: indexP.toString(),
+          province: formP.province,
           name: formP.name,
-          eventType: formP.eventType,
-          eventName: formP.eventName,
-          processes: [],
+          rescue: formP.rescue,
+          car: formP.car,
+          code: formP.code,
+          traffic: [],
         };
         dataSource.value.push(newData);
         indexS.push(0);
@@ -578,11 +904,25 @@ export default defineComponent({
     const formRefP = ref();
 
     const formS = reactive({
-      name: '',
+      origin: '',
+      dest: '',
+      length: '',
+      desc: '',
     });
 
     const rulesS = {
-      name: [{required: true, message: '请输入步骤名称'}],
+      origin: [{required: true, message: '请选择起点'}],
+      dest: [{required: true, message: '请选择终点'}, {
+        validator: async (rule, value) => {
+          if (value === formS.origin)
+            return Promise.reject("终点与起点重复");
+          else
+            return Promise.resolve();
+        },
+        trigger: 'change',
+      }],
+      length: [{required: true, message: '请输入路径长度'}],
+      desc: [{required: false}],
     };
 
     const visibleS = ref(false);
@@ -604,9 +944,12 @@ export default defineComponent({
         const newData = {
           dataKey: selectKey.value,
           key: indexS[parseInt(selectKey.value)].toString(),
-          name: formS.name,
+          origin: formS.origin,
+          dest: formS.dest,
+          length: formS.length,
+          desc: formS.desc,
         };
-        dataSource.value.filter(item => item.key === selectKey.value)[0]['processes'].push(newData);
+        dataSource.value.filter(item => item.key === selectKey.value)[0]['traffic'].push(newData);
         message.success('已添加 1 个条目');
         onCloseS();
         indexS[parseInt(selectKey.value)]++;
@@ -615,7 +958,7 @@ export default defineComponent({
 
     const formRefS = ref();
 
-    const selectKey = ref();
+    const selectKey = ref('');
 
     return {
       handleAddProcess,
@@ -632,8 +975,9 @@ export default defineComponent({
       cancel,
       onDelete,
       innerColumns,
-      event,
-      getEvent,
+      province,
+      getProvince,
+      getCity,
       onDeleteProcess,
       formP,
       rulesP,
@@ -648,7 +992,8 @@ export default defineComponent({
       showDrawerS,
       onCloseS,
       onSubmitS,
-      formRefS
+      formRefS,
+      selectKey
     };
   },
 });
