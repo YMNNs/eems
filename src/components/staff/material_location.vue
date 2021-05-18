@@ -129,8 +129,8 @@
       </a-row>
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="物资信息" name="goods">
-            <a-select placeholder="请选择物资信息" mode="multiple" v-model:value="form.goods">
+          <a-form-item label="物资内容" name="goods">
+            <a-select placeholder="请选择物资内容" mode="multiple" v-model:value="form.goods">
               <a-select-option v-for="item in goods" :key='item' :value='item'>{{ item }}
               </a-select-option>
             </a-select>
