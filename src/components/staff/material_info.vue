@@ -8,8 +8,8 @@
   </a-page-header>
   <br/>
   <a-row type="flex" justify="space-around" align="middle">
-    <a-col :span="2"/>
-    <a-col :span="20">
+<!--    <a-col :span="2"/>-->
+    <a-col :span="24">
 
       <a-button @click="handleAdd" style="margin-bottom: 8px" type="primary">
         <template #icon>
@@ -103,7 +103,7 @@
           <div class="editable-row-operations">
               <span v-if="editableData[record.key]">
                   <a @click="save(record.key)">保存</a>
-                <a-popconfirm title="确定取消吗？" @confirm="cancel(record.key)">
+                <a-popconfirm title="将不会保存您的更改" @confirm="cancel(record.key)">
                   <a>取消</a>
                 </a-popconfirm>
               </span>
@@ -118,7 +118,7 @@
       </a-table>
 
     </a-col>
-    <a-col :span="2"/>
+    <a-col :span="0"/>
   </a-row>
   <a-drawer
       title="新建基本信息"
