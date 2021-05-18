@@ -526,13 +526,20 @@ export default defineComponent({
         const onSubmitP = () => {
           formRefP.value.validate().then(() => {
             const newData = {
-              key: indexP.toString(),
-              province: formP.province,
-              name: formP.name,
-              rescue: formP.rescue,
-              car: formP.car,
-              code: formP.code,
-              traffic: [],
+              key: indexP, //id
+              name: formP.name, //事件名称
+              riskEnterpriseId: formP.riskEnterpriseId,//风险企业
+              processId: parseInt(formP.processId),//流程编号
+              reporterName: formP.reporterName,//报警人
+              reporterTel: formP.reporterTel,//报警人联系电话
+              reportTime: formP.reportTime, //接报时间
+              processCreatorName: '流程创建者1', //流程创建者姓名
+              processCreationTime: '2019/05/18', //流程创建时间
+              lastModifierName: '工作人员', //最后更新者姓名
+              lastUpdateTime: '2019/05/18',//最后更新时间
+              specialistComment: '',//专家意见
+              commanderComment: '', //指挥人员意见
+              status: '等待审批'
             };
             dataSource.value.push(newData);
             message.success('已添加 1 个条目');
