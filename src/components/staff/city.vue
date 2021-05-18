@@ -8,16 +8,15 @@
   </a-page-header>
   <br/>
   <a-row type="flex" justify="space-around" align="middle">
-    <!--    <a-col :span="2"/>-->
-    <a-col :span="24">
-
-      <a-button @click="handleAdd" style="margin-bottom: 8px" type="primary">
+    <a-col :span="2"/>
+    <a-col :span="20">
+      <a-button @click="handleAddProcess" style="margin-bottom: 8px" type="primary">
         <template #icon>
           <PlusOutlined/>
         </template>
-        新增
+        新增流程
       </a-button>
-      <a-table :columns="columns" :data-source="dataSource" bordered>
+      <a-table :columns="columns" :data-source="dataSource">
         <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
           <div style="padding: 8px">
             <a-input
@@ -47,24 +46,56 @@
         <template #filterIcon="filtered">
           <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
         </template>
-        <template v-for="col in ['name', 'age', 'address']" #[col]="{ text, record }" :key="col">
+        <template #name="{ record }">
           <div>
             <a-input
                 v-if="editableData[record.key]"
-                v-model:value="editableData[record.key][col]"
+                v-model:value="editableData[record.key]['name']"
                 style="margin: -5px 0"
             />
             <template v-else>
-              {{ text }}
+              {{ record.name }}
+            </template>
+          </div>
+        </template>
+        <template #eventType="{ record }">
+          <div>
+            <a-select
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['eventType']"
+                style="width: 150px"
+                @change="() => {editableData[record.key]['eventName'] = '';}"
+            >
+              <a-select-option v-for="item in event" :key='item.type' :value='item.type'>
+                {{ item.type }}
+              </a-select-option>
+            </a-select>
+            <template v-else>
+              {{ record.eventType }}
+            </template>
+          </div>
+        </template>
+        <template #eventName="{ record }">
+          <div>
+            <a-select
+                v-if="editableData[record.key]"
+                v-model:value="editableData[record.key]['eventName']"
+                style="width: 150px"
+            >
+              <a-select-option v-for="item in getEvent(editableData[record.key]['eventType'])['event']" :key='item.name'
+                               :value='item.name'>
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+            <template v-else>
+              {{ record.eventName }}
             </template>
           </div>
         </template>
         <template #operation="{ record }">
           <div class="editable-row-operations">
               <span v-if="editableData[record.key]">
-                <a-popconfirm title="确定保存吗？" @confirm="save(record.key)">
-                  <a>保存</a>
-                </a-popconfirm>
+                  <a @click="save(record.key)">保存</a>
                 <a-popconfirm title="确定取消吗？" @confirm="cancel(record.key)">
                   <a>取消</a>
                 </a-popconfirm>
@@ -77,82 +108,104 @@
               </span>
           </div>
         </template>
+        <template #expandedRowRender="{ record }">
+          <a-table bordered :columns="innerColumns" :data-source="record.processes" :pagination="false">
+            <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+              <div style="padding: 8px">
+                <a-input
+                    ref="searchInput"
+                    :placeholder="`搜索 ${column.dataIndex}`"
+                    :value="selectedKeys[0]"
+                    style="width: 188px; margin-bottom: 8px; display: block"
+                    @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                    @pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
+                />
+                <a-button
+                    type="primary"
+                    size="small"
+                    style="width: 90px; margin-right: 8px"
+                    @click="handleSearch(selectedKeys, confirm, column.dataIndex)"
+                >
+                  <template #icon>
+                    <SearchOutlined/>
+                  </template>
+                  搜索
+                </a-button>
+                <a-button size="small" style="width: 90px" @click="handleReset(clearFilters)">
+                  重置
+                </a-button>
+              </div>
+            </template>
+            <template #filterIcon="filtered">
+              <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
+            </template>
+            <template #name="{ record }">
+              <div>
+                <a-input
+                    v-if="editableData[record.dataKey]"
+                    v-model:value="editableData[record.dataKey]['processes'][parseInt(record.key)]['name']"
+                    style="margin: -5px 0"
+                />
+                <template v-else>
+                  {{ record.name }}
+                </template>
+              </div>
+            </template>
+            <template #operation="{ record }">
+              <div class="editable-row-operations">
+                <a-popconfirm v-if="dataSource.length" title="确定删除吗？"
+                              @confirm="onDeleteProcess(record.dataKey, record.key,)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </div>
+            </template>
+          </a-table>
+          <br/>
+          <a-button block @click="handleAddStep(record.key)" style="margin-bottom: 16px; color: gray" size="large">
+            <template #icon>
+              <PlusOutlined/>
+            </template>
+            新增事件
+          </a-button>
+        </template>
       </a-table>
-
     </a-col>
-    <!--    <a-col :span="2"/>-->
+    <a-col :span="2"/>
   </a-row>
   <a-drawer
-      title="Create a new account"
-      :width="720"
-      :visible="visible"
+      title="新建流程"
+      :width="480"
+      :visible="visibleP"
       :body-style="{ paddingBottom: '80px' }"
-      @close="onClose"
+      @close="onCloseP"
   >
-    <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
+    <a-form ref="formRefP" :model="formP" :rules="rulesP" layout="vertical">
       <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Name" name="name">
-            <a-input v-model:value="form.name" placeholder="Please enter user name" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Url" name="url">
-            <a-input
-                v-model:value="form.url"
-                style="width: 100%"
-                addon-before="http://"
-                addon-after=".com"
-                placeholder="please enter url"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Owner" name="owner">
-            <a-select placeholder="Please a-s an owner" v-model:value="form.owner">
-              <a-select-option value="xiao">Xiaoxiao Fu</a-select-option>
-              <a-select-option value="mao">Maomao Zhou</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Type" name="type">
-            <a-select placeholder="Please choose the type" v-model:value="form.type">
-              <a-select-option value="private">Private</a-select-option>
-              <a-select-option value="public">Public</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Approver" name="approver">
-            <a-select placeholder="Please choose the approver" v-model:value="form.approver">
-              <a-select-option value="jack">Jack Ma</a-select-option>
-              <a-select-option value="tom">Tom Liu</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="DateTime" name="dateTime">
-            <a-date-picker
-                v-model:value="form.dateTime"
-                style="width: 100%"
-                :get-popup-container="trigger => trigger.parentNode"
-            />
+        <a-col :span="24">
+          <a-form-item label="流程名称" name="name">
+            <a-input v-model:value="formP.name" placeholder="请输入流程名称"/>
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="16">
         <a-col :span="24">
-          <a-form-item label="Description" name="description">
-            <a-textarea
-                v-model:value="form.description"
-                :rows="4"
-                placeholder="please enter url description"
-            />
+          <a-form-item label="事件类型" name="eventType">
+            <a-select placeholder="请选择事件类型" v-model:value="formP.eventType" @change="formP.eventName = ''">
+              <a-select-option v-for="item in event" :key='item.type' :value='item.type'>{{ item.type }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="事件" name="eventName">
+            <a-select placeholder="请选择事件" v-model:value="formP.eventName">
+              <a-select-option
+                  v-for="item in (formP.eventType === '')?[{name: ''}]:event.filter(eventItem => eventItem.type === formP.eventType)[0]['event']"
+                  :key='item.name' :value='item.name'>{{ item.name }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -170,27 +223,88 @@
         zIndex: 1,
       }"
     >
-      <a-button style="margin-right: 8px" @click="onClose">Cancel</a-button>
-      <a-button type="primary" @click="onSubmit">Submit</a-button>
+      <a-button style="margin-right: 8px" @click="onCloseP">取消</a-button>
+      <a-button type="primary" @click="onSubmitP">提交</a-button>
+    </div>
+  </a-drawer>
+  <a-drawer
+      title="新建步骤"
+      :width="480"
+      :visible="visibleS"
+      :body-style="{ paddingBottom: '80px' }"
+      @close="onCloseS"
+  >
+    <a-form ref="formRefS" :model="formS" :rules="rulesS" layout="vertical">
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="步骤名称" name="name">
+            <a-input v-model:value="formS.name" placeholder="请输入步骤名称"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <div
+        :style="{
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'right',
+        zIndex: 1,
+      }"
+    >
+      <a-button style="margin-right: 8px" @click="onCloseS">取消</a-button>
+      <a-button type="primary" @click="onSubmitS">提交</a-button>
     </div>
   </a-drawer>
 </template>
 
+
 <script>
+import {defineComponent, reactive, ref} from 'vue';
 import {message} from 'ant-design-vue';
 import {cloneDeep} from 'lodash-es';
-import {computed, defineComponent, reactive, ref} from 'vue';
-import {SearchOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import {PlusOutlined, SearchOutlined} from '@ant-design/icons-vue';
 
 export default defineComponent({
   components: {
-    SearchOutlined,
-    PlusOutlined
+    PlusOutlined,
+    SearchOutlined
   },
   setup() {
+    const handleAddProcess = () => {
+      showDrawerP();
+    };
+    const handleAddStep = (key) => {
+      selectKey.value = key;
+      showDrawerS();
+    };
     const columns = [
       {
-        title: 'name',
+        title: '编号',
+        dataIndex: 'key',
+        width: '15%',
+        slots: {
+          customRender: 'key',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.key.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '流程名称',
         dataIndex: 'name',
         width: '25%',
         slots: {
@@ -210,16 +324,16 @@ export default defineComponent({
         },
       },
       {
-        title: 'age',
-        dataIndex: 'age',
-        width: '15%',
+        title: '事件类型',
+        dataIndex: 'eventType',
+        width: '20%',
         slots: {
-          customRender: 'age',
+          customRender: 'eventType',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.eventType.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -230,16 +344,16 @@ export default defineComponent({
         },
       },
       {
-        title: 'address',
-        dataIndex: 'address',
-        width: '40%',
+        title: '事件名称',
+        dataIndex: 'eventName',
+        width: '20%',
         slots: {
-          customRender: 'address',
+          customRender: 'eventName',
           filterDropdown: 'filterDropdown',
           filterIcon: 'filterIcon',
         },
         onFilter: (value, record) =>
-            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+            record.eventName.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownVisibleChange: visible => {
           if (visible) {
             setTimeout(() => {
@@ -250,27 +364,149 @@ export default defineComponent({
         },
       },
       {
-        title: 'operation',
+        title: '操作',
         dataIndex: 'operation',
+        width: '15%',
         slots: {
           customRender: 'operation',
         },
       },
     ];
 
-    const data = [];
+    const innerColumns = [
+      {
+        title: '序号',
+        dataIndex: 'key',
+        width: '10%',
+        slots: {
+          customRender: 'key',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.key.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '步骤名称',
+        dataIndex: 'name',
+        width: '30%',
+        slots: {
+          customRender: 'name',
+          filterDropdown: 'filterDropdown',
+          filterIcon: 'filterIcon',
+        },
+        onFilter: (value, record) =>
+            record.name.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: visible => {
+          if (visible) {
+            setTimeout(() => {
+              console.log(searchInput.value);
+              searchInput.value.focus();
+            }, 0);
+          }
+        },
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation',
+        width: '15%',
+        slots: {
+          customRender: 'operation',
+        },
+      }
+    ];
 
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i.toString(),
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
-      });
+    const event = [
+      {
+        type: '自然灾害',
+        event: [
+          {
+            name: '洪涝灾害',
+          },
+          {
+            name: '台风',
+          },
+        ]
+      },
+      {
+        type: '公共卫生事件',
+        event: [
+          {
+            name: '新冠疫情',
+          },
+        ]
+      },
+    ]
+
+    const getEvent = (eventType) => {
+      return event.filter(item => item.type === eventType)[0]
     }
 
-
+    const data = [
+      {
+        key: '0',
+        name: '台风应急',
+        province: '自然灾害',
+        aidNum: '台风',
+        processes: [
+          {
+            dataKey: '0',
+            key: '0',
+            name: '发布预警',
+          },
+          {
+            dataKey: '0',
+            key: '1',
+            name: '组织疏散和转移',
+          }
+        ]
+      },
+      {
+        key: '1',
+        name: '台风应急',
+        eventType: '自然灾害',
+        eventName: '台风',
+        processes: [
+          {
+            dataKey: '1',
+            key: '0',
+            name: '发布预警',
+          },
+          {
+            dataKey: '1',
+            key: '1',
+            name: '组织疏散和转移',
+          }
+        ]
+      }
+    ]
     const dataSource = ref(data);
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      state.searchText = selectedKeys[0];
+      state.searchedColumn = dataIndex;
+    };
+
+    const handleReset = clearFilters => {
+      clearFilters();
+      state.searchText = '';
+    };
+
+    const state = reactive({
+      searchText: '',
+      searchedColumn: '',
+    });
+
+    const searchInput = ref();
     const editableData = reactive({});
 
     const edit = key => {
@@ -291,110 +527,133 @@ export default defineComponent({
       dataSource.value = dataSource.value.filter(item => item.key !== key);
       message.success('已删除 1 个条目')
     };
-    const handleAdd = () => {
-      const newData = {
-        key: `${count.value}`,
-        name: `Edward King ${count.value}`,
-        age: 32,
-        address: `London, Park Lane no. ${count.value}`,
-      };
-      dataSource.value.push(newData);
-      showDrawer();
-    };
-    const count = computed(() => dataSource.value.length + 1);
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-      confirm();
-      state.searchText = selectedKeys[0];
-      state.searchedColumn = dataIndex;
+    const onDeleteProcess = (dataKey, key) => {
+      dataSource.value[parseInt(dataKey)].processes = dataSource.value[parseInt(dataKey)].processes.filter(item => item.key !== key);
+      message.success('已删除 1 个条目')
     };
 
-    const handleReset = clearFilters => {
-      clearFilters();
-      state.searchText = '';
-    };
-
-    const state = reactive({
-      searchText: '',
-      searchedColumn: '',
-    });
-
-    const searchInput = ref();
-
-    const form = reactive({
+    const formP = reactive({
       name: '',
-      url: '',
-      owner: '',
-      type: '',
-      approver: '',
-      dateTime: '',
-      description: '',
+      eventType: '',
+      eventName: '',
     });
 
-    const rules = {
-      name: [{ required: true, message: 'Please enter user name' }],
-      url: [{ required: true, message: 'please enter url' }],
-      owner: [{ required: true, message: 'Please select an owner' }],
-      type: [{ required: true, message: 'Please choose the type' }],
-      approver: [{ required: true, message: 'Please choose the approver' }],
-      dateTime: [{ required: true, message: 'Please choose the dateTime', type: 'object' }],
-      description: [{ required: true, message: 'Please enter url description' }],
+    const rulesP = {
+      name: [{required: true, message: '请输入流程名称'}],
+      eventType: [{required: true, message: '请选择事件类型'}],
+      eventName: [{required: true, message: '请选择事件'}],
     };
 
-    const visible = ref(false);
+    const visibleP = ref(false);
 
-    const showDrawer = () => {
-      visible.value = true;
+    const showDrawerP = () => {
+      visibleP.value = true;
     };
 
-    const onClose = () => {
-      formRef.value.resetFields();
-      visible.value = false;
+    const onCloseP = () => {
+      formRefP.value.resetFields();
+      visibleP.value = false;
     };
 
-    const onSubmit = () => {
-      formRef.value.validate().then(() => {
+    let indexP = 2
+
+    const onSubmitP = () => {
+      formRefP.value.validate().then(() => {
         const newData = {
-          key: `${count.value}`,
-          name: `Edward King ${count.value}`,
-          age: 32,
-          address: `London, Park Lane no. ${count.value}`,
+          key: indexP.toString(),
+          name: formP.name,
+          eventType: formP.eventType,
+          eventName: formP.eventName,
+          processes: [],
         };
         dataSource.value.push(newData);
+        indexS.push(0);
         message.success('已添加 1 个条目');
-        onClose();
+        onCloseP();
+        indexP++;
       })
     };
 
-    const formRef = ref();
+    const formRefP = ref();
+
+    const formS = reactive({
+      name: '',
+    });
+
+    const rulesS = {
+      name: [{required: true, message: '请输入步骤名称'}],
+    };
+
+    const visibleS = ref(false);
+
+    const showDrawerS = () => {
+      visibleS.value = true;
+    };
+
+    const onCloseS = () => {
+      formRefS.value.resetFields();
+      visibleS.value = false;
+      selectKey.value = '';
+    };
+
+    let indexS = [2, 2]
+
+    const onSubmitS = () => {
+      formRefS.value.validate().then(() => {
+        const newData = {
+          dataKey: selectKey.value,
+          key: indexS[parseInt(selectKey.value)].toString(),
+          name: formS.name,
+        };
+        dataSource.value.filter(item => item.key === selectKey.value)[0]['processes'].push(newData);
+        message.success('已添加 1 个条目');
+        onCloseS();
+        indexS[parseInt(selectKey.value)]++;
+      })
+    };
+
+    const formRefS = ref();
+
+    const selectKey = ref();
 
     return {
-      dataSource,
+      handleAddProcess,
+      handleAddStep,
       columns,
-      editingKey: '',
+      handleSearch,
+      handleReset,
+      dataSource,
+      searchText: '',
+      searchedColumn: '',
       editableData,
       edit,
       save,
       cancel,
-      handleAdd,
-      // count,
       onDelete,
-      handleSearch,
-      handleReset,
-      searchText: '',
-      searchInput,
-      searchedColumn: '',
-      form,
-      rules,
-      visible,
-      showDrawer,
-      onClose,
-      onSubmit,
-      formRef
+      innerColumns,
+      event,
+      getEvent,
+      onDeleteProcess,
+      formP,
+      rulesP,
+      visibleP,
+      showDrawerP,
+      onCloseP,
+      onSubmitP,
+      formRefP,
+      formS,
+      rulesS,
+      visibleS,
+      showDrawerS,
+      onCloseS,
+      onSubmitS,
+      formRefS
     };
   },
 });
 </script>
+
 <style scoped>
 .editable-row-operations a {
   margin-right: 8px;

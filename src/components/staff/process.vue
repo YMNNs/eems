@@ -14,7 +14,7 @@
         <template #icon>
           <PlusOutlined/>
         </template>
-        新增
+        新增流程
       </a-button>
       <a-table :columns="columns" :data-source="dataSource">
         <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
@@ -108,14 +108,8 @@
               </span>
           </div>
         </template>
-        <template #expandedRowRender="{record}">
-          <a-button @click="handleAddProcess" style="margin-bottom: 16px" size="small" type="primary">
-            <template #icon>
-              <PlusOutlined/>
-            </template>
-            新增
-          </a-button>
-          <a-table :columns="innerColumns" :data-source="record.processes" :pagination="false">
+        <template #expandedRowRender="{ record }">
+          <a-table bordered :columns="innerColumns" :data-source="record.processes" :pagination="false">
             <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
               <div style="padding: 8px">
                 <a-input
@@ -145,12 +139,127 @@
             <template #filterIcon="filtered">
               <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }"/>
             </template>
+            <template #name="{ record }">
+              <div>
+                <a-input
+                    v-if="editableData[record.dataKey]"
+                    v-model:value="editableData[record.dataKey]['processes'][parseInt(record.key)]['name']"
+                    style="margin: -5px 0"
+                />
+                <template v-else>
+                  {{ record.name }}
+                </template>
+              </div>
+            </template>
+            <template #operation="{ record }">
+              <div class="editable-row-operations">
+                <a-popconfirm v-if="dataSource.length" title="确定删除吗？"
+                              @confirm="onDeleteProcess(record.dataKey, record.key,)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </div>
+            </template>
           </a-table>
+          <br/>
+          <a-button block @click="handleAddStep(record.key)" style="margin-bottom: 16px; color: gray" size="large">
+            <template #icon>
+              <PlusOutlined/>
+            </template>
+            新增事件
+          </a-button>
         </template>
       </a-table>
     </a-col>
     <a-col :span="2"/>
   </a-row>
+  <a-drawer
+      title="新建流程"
+      :width="480"
+      :visible="visibleP"
+      :body-style="{ paddingBottom: '80px' }"
+      @close="onCloseP"
+  >
+    <a-form ref="formRefP" :model="formP" :rules="rulesP" layout="vertical">
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="流程名称" name="name">
+            <a-input v-model:value="formP.name" placeholder="请输入流程名称"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="事件类型" name="eventType">
+            <a-select placeholder="请选择事件类型" v-model:value="formP.eventType" @change="formP.eventName = ''">
+              <a-select-option v-for="item in event" :key='item.type' :value='item.type'>{{ item.type }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="事件" name="eventName">
+            <a-select placeholder="请选择事件" v-model:value="formP.eventName">
+              <a-select-option
+                  v-for="item in (formP.eventType === '')?[{name: ''}]:event.filter(eventItem => eventItem.type === formP.eventType)[0]['event']"
+                  :key='item.name' :value='item.name'>{{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <div
+        :style="{
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'right',
+        zIndex: 1,
+      }"
+    >
+      <a-button style="margin-right: 8px" @click="onCloseP">取消</a-button>
+      <a-button type="primary" @click="onSubmitP">提交</a-button>
+    </div>
+  </a-drawer>
+  <a-drawer
+      title="新建步骤"
+      :width="480"
+      :visible="visibleS"
+      :body-style="{ paddingBottom: '80px' }"
+      @close="onCloseS"
+  >
+    <a-form ref="formRefS" :model="formS" :rules="rulesS" layout="vertical">
+      <a-row :gutter="16">
+        <a-col :span="24">
+          <a-form-item label="步骤名称" name="name">
+            <a-input v-model:value="formS.name" placeholder="请输入步骤名称"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <div
+        :style="{
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        borderTop: '1px solid #e9e9e9',
+        padding: '10px 16px',
+        background: '#fff',
+        textAlign: 'right',
+        zIndex: 1,
+      }"
+    >
+      <a-button style="margin-right: 8px" @click="onCloseS">取消</a-button>
+      <a-button type="primary" @click="onSubmitS">提交</a-button>
+    </div>
+  </a-drawer>
 </template>
 
 
@@ -167,7 +276,11 @@ export default defineComponent({
   },
   setup() {
     const handleAddProcess = () => {
-
+      showDrawerP();
+    };
+    const handleAddStep = (key) => {
+      selectKey.value = key;
+      showDrawerS();
     };
     const columns = [
       {
@@ -345,11 +458,31 @@ export default defineComponent({
         eventName: '台风',
         processes: [
           {
-            key: '1',
+            dataKey: '0',
+            key: '0',
             name: '发布预警',
           },
           {
-            key: '2',
+            dataKey: '0',
+            key: '1',
+            name: '组织疏散和转移',
+          }
+        ]
+      },
+      {
+        key: '1',
+        name: '台风应急',
+        eventType: '自然灾害',
+        eventName: '台风',
+        processes: [
+          {
+            dataKey: '1',
+            key: '0',
+            name: '发布预警',
+          },
+          {
+            dataKey: '1',
+            key: '1',
             name: '组织疏散和转移',
           }
         ]
@@ -395,8 +528,98 @@ export default defineComponent({
       message.success('已删除 1 个条目')
     };
 
+    const onDeleteProcess = (dataKey, key) => {
+      dataSource.value[parseInt(dataKey)].processes = dataSource.value[parseInt(dataKey)].processes.filter(item => item.key !== key);
+      message.success('已删除 1 个条目')
+    };
+
+    const formP = reactive({
+      name: '',
+      eventType: '',
+      eventName: '',
+    });
+
+    const rulesP = {
+      name: [{required: true, message: '请输入流程名称'}],
+      eventType: [{required: true, message: '请选择事件类型'}],
+      eventName: [{required: true, message: '请选择事件'}],
+    };
+
+    const visibleP = ref(false);
+
+    const showDrawerP = () => {
+      visibleP.value = true;
+    };
+
+    const onCloseP = () => {
+      formRefP.value.resetFields();
+      visibleP.value = false;
+    };
+
+    let indexP = 2
+
+    const onSubmitP = () => {
+      formRefP.value.validate().then(() => {
+        const newData = {
+          key: indexP.toString(),
+          name: formP.name,
+          eventType: formP.eventType,
+          eventName: formP.eventName,
+          processes: [],
+        };
+        dataSource.value.push(newData);
+        indexS.push(0);
+        message.success('已添加 1 个条目');
+        onCloseP();
+        indexP++;
+      })
+    };
+
+    const formRefP = ref();
+
+    const formS = reactive({
+      name: '',
+    });
+
+    const rulesS = {
+      name: [{required: true, message: '请输入步骤名称'}],
+    };
+
+    const visibleS = ref(false);
+
+    const showDrawerS = () => {
+      visibleS.value = true;
+    };
+
+    const onCloseS = () => {
+      formRefS.value.resetFields();
+      visibleS.value = false;
+      selectKey.value = '';
+    };
+
+    let indexS = [2, 2]
+
+    const onSubmitS = () => {
+      formRefS.value.validate().then(() => {
+        const newData = {
+          dataKey: selectKey.value,
+          key: indexS[parseInt(selectKey.value)].toString(),
+          name: formS.name,
+        };
+        dataSource.value.filter(item => item.key === selectKey.value)[0]['processes'].push(newData);
+        message.success('已添加 1 个条目');
+        onCloseS();
+        indexS[parseInt(selectKey.value)]++;
+      })
+    };
+
+    const formRefS = ref();
+
+    const selectKey = ref();
+
     return {
       handleAddProcess,
+      handleAddStep,
       columns,
       handleSearch,
       handleReset,
@@ -410,7 +633,22 @@ export default defineComponent({
       onDelete,
       innerColumns,
       event,
-      getEvent
+      getEvent,
+      onDeleteProcess,
+      formP,
+      rulesP,
+      visibleP,
+      showDrawerP,
+      onCloseP,
+      onSubmitP,
+      formRefP,
+      formS,
+      rulesS,
+      visibleS,
+      showDrawerS,
+      onCloseS,
+      onSubmitS,
+      formRefS
     };
   },
 });
