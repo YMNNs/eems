@@ -146,8 +146,8 @@
         zIndex: 1,
       }"
     >
-      <a-button style="margin-right: 8px" @click="onClose">Cancel</a-button>
-      <a-button type="primary" @click="onSubmit">Submit</a-button>
+      <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+      <a-button type="primary" @click="onSubmit">提交</a-button>
     </div>
   </a-drawer>
 </template>
