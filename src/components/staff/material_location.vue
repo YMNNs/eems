@@ -1,6 +1,6 @@
 <template>
   <!--    页头-->
-  <a-page-header sub-title="维护物资的位置信息。" title="物资位置信息维护"
+  <a-page-header sub-title="维护物资的位置信息。" title="物资位置维护"
                  @back="() => $router.go(-1)">
     <template #tags>
       <a-tag color="blue">工作人员</a-tag>
@@ -17,7 +17,7 @@
         </template>
         新增
       </a-button>
-      <a-table :columns="columns" :data-source="dataSource" bordered>
+      <a-table :columns="columns" :data-source="dataSource">
         <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
           <div style="padding: 8px">
             <a-input
@@ -95,7 +95,7 @@
           <div class="editable-row-operations">
               <span v-if="editableData[record.key]">
                   <a @click="save(record.key)">保存</a>
-                <a-popconfirm title="将不会保存您的更改" @confirm="cancel(record.key)">
+                <a-popconfirm title="将不会保存您-的更改" @confirm="cancel(record.key)">
                   <a>取消</a>
                 </a-popconfirm>
               </span>

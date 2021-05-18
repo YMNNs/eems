@@ -17,7 +17,7 @@
         </template>
         新增
       </a-button>
-      <a-table :columns="columns" :data-source="dataSource" bordered>
+      <a-table :columns="columns" :data-source="dataSource">
         <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
           <div style="padding: 8px">
             <a-input
